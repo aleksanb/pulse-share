@@ -1,5 +1,6 @@
 .PHONY: run
 run:
+	npm install
 	node server.js
 
 .PHONY: build
