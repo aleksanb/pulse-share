@@ -7,9 +7,9 @@ var server = http.createServer(express()),
 
 var clients = {},
     pulses = {
-      'assios': 140,
-      'aleksan': 100,
-      'stiaje': 40
+      'assios': [140],
+      'aleksan': [100],
+      'stiaje': [40]
     };
 
 function broadcast(message) {
@@ -22,7 +22,19 @@ sock.on('connection', function(conn) {
   var keepalive = setInterval(function() {
     var data = [];
     for (var username in pulses) {
-      data.push({username: username, pulse: pulses[username]});
+      var p = pulses[username],
+          current = p[p.length -1],
+          max = Math.max.apply(null, p),
+          slidingWindow = p.slice(p.length - 10, p.length),
+          average = slidingWindow
+            .reduce(function(a,b) { return a + b; }) / slidingWindow.length;
+
+      data.push({
+        username: username,
+        current: current,
+        max: max,
+        average: average
+      });
     }
 
     conn.write(JSON.stringify(data));
@@ -37,7 +49,7 @@ sock.on('connection', function(conn) {
     var data = JSON.parse(message);
 
     if (data.type === 'pulse') {
-      pulses[data.username] = data.pulse;
+      pulses[data.username].push(data.pulse);
     }
   });
 

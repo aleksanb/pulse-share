@@ -27,7 +27,7 @@ function yo(name, puls) {
 var PulseHighscores = React.createClass({
   render: function() {
     function toLi(item) {
-      return <li>{item.username}: {item.pulse}</li>
+      return <li>{item.username}: {item.current} (max: {item.max}, avg: {item.average})</li>
     }
 
     return <ul>{this.props.pulses.map(toLi)}</ul>;
